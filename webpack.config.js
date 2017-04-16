@@ -1,11 +1,14 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Config = require('webpack-chain');
+const parts = require('./webpack.parts');
 
 const PATHS = {
   app: path.join(__dirname, 'app'),
   build: path.join(__dirname, 'build'),
 };
+
+const { host, port } = process.env;
 
 const config = new Config();
 const dev = new Config();
@@ -22,15 +25,9 @@ config
 config.plugin('index.html')
   .use(HtmlWebpackPlugin, [{ title: 'Webpack demo' }]);
 
-dev.devServer
-  .historyApiFallback(true)
-  .stats('errors-only')
-  .host(process.env.HOST)
-  .host(process.env.PORT);
-
 module.exports = (env) => {
   config.when(( env !== 'production' ),
-    config => config.merge(dev.toConfig())
+    config => parts.devServer(config, { host, port })
   );
 
   return config.toConfig();
