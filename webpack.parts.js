@@ -1,3 +1,6 @@
+
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
 exports.devServer = (config, { host, port } = {}) =>
   config.devServer
     .historyApiFallback(true)
@@ -13,5 +16,22 @@ exports.loadCSS = (config, { include = [], exclude = [] } = {}) =>
       .use('style')
         .loader('style-loader').end()
       .use('css')
-        .loader('css-loader')
-        .options({ modules: true });
+        .loader('css-loader?modules');
+
+exports.extractCSS = (config, { include = [], exclude = [] } = {}) => {
+  config.plugin('extract-text')
+    .use(ExtractTextPlugin, [{ filename: '[name].css' }]);
+
+  return config.module
+    .rule('extractCSS')
+      .test(/\.css$/)
+      .merge({ include, exclude,
+        // ExtractTextPlugin doesn't work nice with webpack-chain,
+        // so using merge is possible the best solution right now.
+        // https://github.com/mozilla-neutrino/webpack-chain/issues/20
+        use: ExtractTextPlugin.extract({
+          use: 'css-loader?modules',
+          fallback: 'style-loader',
+        }),
+      });
+};

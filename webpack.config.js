@@ -24,12 +24,16 @@ config
 config.plugin('index.html')
   .use(HtmlWebpackPlugin, [{ title: 'Webpack demo' }]);
 
-parts.loadCSS(config);
-
 module.exports = (env) => {
-  config.when(( env !== 'production' ),
-    config => parts.devServer(config, { host, port })
-  );
+  config.when(( env === 'production'),
+    config => {
+      parts.extractCSS(config);
+    })
+  .when(( env !== 'production' ),
+    config => {
+      parts.loadCSS(config);
+      parts.devServer(config, { host, port });
+    });
 
   return config.toConfig();
 };
