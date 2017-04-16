@@ -25,15 +25,16 @@ config.plugin('index.html')
   .use(HtmlWebpackPlugin, [{ title: 'Webpack demo' }]);
 
 module.exports = (env) => {
-  config.when(( env === 'production'),
-    config => {
-      parts.extractCSS(config);
-    })
-  .when(( env !== 'production' ),
+  config
+  .when(( env.target === 'production' ),
+    config => parts.extractCSS(config))
+  .when(( env.target !== 'production' ),
     config => {
       parts.loadCSS(config);
       parts.devServer(config, { host, port });
-    });
+    })
+  .when(( env.lint ),
+    config => parts.lintJS(config));
 
   return config.toConfig();
 };

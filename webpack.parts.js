@@ -8,6 +8,14 @@ exports.devServer = (config, { host, port } = {}) =>
     .host(host)
     .host(port);
 
+exports.lintJS = config =>
+  config.module
+    .rule('lintJS')
+      .test(/\.js$/)
+      .enforce('pre')
+      .use('eslint')
+        .loader('eslint-loader?emitWarning');
+
 exports.loadCSS = (config, { include = [], exclude = [] } = {}) =>
   config.module
     .rule('loadCSS')
