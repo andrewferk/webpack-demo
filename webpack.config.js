@@ -1,55 +1,37 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Config = require('webpack-chain');
 
 const PATHS = {
   app: path.join(__dirname, 'app'),
   build: path.join(__dirname, 'build'),
 };
 
-const commonConfig = {
-  entry: {
-    app: PATHS.app,
-  },
-  output: {
-    path: PATHS.build,
-    filename: '[name].js',
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'Webpack demo',
-    }),
-  ],
-};
+const config = new Config();
+const dev = new Config();
 
-const productionConfig = () => commonConfig;
+config
+  .entry('app')
+    .add(PATHS.app);
 
-const developmentConfig = () => {
-  const config = {
-    devServer: {
-      // Enable history API fallback so HTML5 History API based
-      // routing works. Good for complex setups.
-      historyApiFallback: true,
+config
+  .output
+    .path(PATHS.build)
+    .filename('[name].js');
 
-      // Display only errors to reduce the amount of output.
-      stats: 'errors-only',
+config.plugin('index.html')
+  .use(HtmlWebpackPlugin, [{ title: 'Webpack demo' }]);
 
-      host: process.env.HOST, // Defaults to `localhost`
-      port: process.env.PORT, // Defaults to 8080
-    },
-  };
-
-  return Object.assign(
-    {},
-    commonConfig,
-    config
-  );
-};
-
+dev.devServer
+  .historyApiFallback(true)
+  .stats('errors-only')
+  .host(process.env.HOST)
+  .host(process.env.PORT);
 
 module.exports = (env) => {
-  if (env === 'production') {
-    return productionConfig();
-  }
+  config.when(( env !== 'production' ),
+    config => config.merge(dev.toConfig())
+  );
 
-  return developmentConfig();
+  return config.toConfig();
 };
