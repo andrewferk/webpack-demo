@@ -13,4 +13,5 @@ exports.loadCSS = (config, { include = [], exclude = [] } = {}) =>
       .use('style')
         .loader('style-loader').end()
       .use('css')
-        .loader('css-loader');
+        .loader('css-loader')
+        .options({ modules: true });
