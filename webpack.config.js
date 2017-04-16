@@ -11,7 +11,6 @@ const PATHS = {
 const { host, port } = process.env;
 
 const config = new Config();
-const dev = new Config();
 
 config
   .entry('app')
@@ -24,6 +23,8 @@ config
 
 config.plugin('index.html')
   .use(HtmlWebpackPlugin, [{ title: 'Webpack demo' }]);
+
+parts.loadCSS(config);
 
 module.exports = (env) => {
   config.when(( env !== 'production' ),
