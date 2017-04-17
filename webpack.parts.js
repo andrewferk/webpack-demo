@@ -1,5 +1,8 @@
-
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const ESLINT_LOADER = 'eslint-loader?emitWarning';
+const CSS_LOADER = 'css-loader?modules';
+const STYLE_LOADER = 'style-loader';
 
 exports.devServer = (config, { host, port } = {}) =>
   config.devServer
@@ -14,7 +17,7 @@ exports.lintJS = config =>
       .test(/\.js$/)
       .enforce('pre')
       .use('eslint')
-        .loader('eslint-loader?emitWarning');
+        .loader(ESLINT_LOADER);
 
 exports.loadCSS = (config, { include = [], exclude = [] } = {}) =>
   config.module
@@ -22,9 +25,9 @@ exports.loadCSS = (config, { include = [], exclude = [] } = {}) =>
       .test(/\.css$/)
       .merge({ include, exclude })
       .use('style')
-        .loader('style-loader').end()
+        .loader(STYLE_LOADER).end()
       .use('css')
-        .loader('css-loader?modules');
+        .loader(CSS_LOADER);
 
 exports.extractCSS = (config, { include = [], exclude = [] } = {}) => {
   config.plugin('extract-text')
@@ -38,8 +41,8 @@ exports.extractCSS = (config, { include = [], exclude = [] } = {}) => {
         // so using merge is possible the best solution right now.
         // https://github.com/mozilla-neutrino/webpack-chain/issues/20
         use: ExtractTextPlugin.extract({
-          use: 'css-loader?modules',
-          fallback: 'style-loader',
+          use: CSS_LOADER,
+          fallback: STYLE_LOADER,
         }),
       });
 };
