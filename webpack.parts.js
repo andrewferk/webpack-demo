@@ -9,7 +9,7 @@ exports.devServer = (config, { host, port } = {}) =>
     .historyApiFallback(true)
     .stats('errors-only')
     .host(host)
-    .host(port);
+    .port(port);
 
 exports.lintJS = config =>
   config.module
